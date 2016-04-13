@@ -368,7 +368,22 @@ sub read_configfile {
       my ($key, $val) = ($line =~ /^\-([^ ]+) (.+)$/) ;
       $opts->{$key} = $val ;
    }
-   close(CONFIGF)
+   close(CONFIGF) ;
+
+# tilde expansion from perlfaq5
+
+   $opts->{dir} =~ s{
+             ^ ~             # find a leading tilde
+             (               # save this in $1
+                 [^/]        # a non-slash character
+                       *     # repeated 0 or more times (0 means me)
+             )
+   }{
+             $1
+                 ? (getpwnam($1))[7]
+                 : ( $ENV{HOME} || $ENV{LOGDIR} )
+   }ex;
+
 }
 
 sub make_webpages {
