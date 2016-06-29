@@ -142,7 +142,7 @@ wholelabbook.pdf in your notebook directory.
 
 - bash alias to search the notebook (change NOTEBOOKDIRECTORY to the actual directory path):
 
-        nbgrep() { grep "$@" NOTEBOOKDIRECTORY/20*/*/*md;}
+        function nbgrep() { grep "$@" NOTEBOOKDIRECTORY/20*/*/*md;}
 
 - csh alias to search the notebook (change NOTEBOOKDIRECTORY to the actual directory path):
 
