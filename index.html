@@ -78,8 +78,8 @@ then run <code>source ~/.cshrc</code>:
   <code>alias mdlabbook perl /FULLPATH/TO/THE/MDLABBOOK/src/mdlabbook.pl</code></p></li>
 </ul>
 </li>
-<li><p>Install <a href="http://pandoc.org">pandoc</a>. Follow their suggestions for installing
-LaTeX, as you'll need it for producing PDF output</p></li>
+<li><p>Install <a href="http://pandoc.org">pandoc</a>. After installing pandoc, also follow
+their instructions to install LaTeX, as you'll need it to create PDFs.</p></li>
 <li><p>Optional: Install <a href="http://vim.org">vim</a> if you don't already have it -- vim
 is the default editor, though you can specify another editor in the config
 file (see below) if you prefer.</p></li>
@@ -184,7 +184,13 @@ wholelabbook.pdf in your notebook directory.</p></li>
 <li><p>Stores images or other files by month:
 <code>notebookdirectory/year/yearmonth/files</code></p></li>
 <li>
-<p>cshrc alias to search the notebook:</p>
+<p>bash alias to search the notebook (change NOTEBOOKDIRECTORY to the actual directory path):</p>
+
+<pre><code>function nbgrep() { grep "$@" NOTEBOOKDIRECTORY/20*/*/*md;}
+</code></pre>
+</li>
+<li>
+<p>csh alias to search the notebook (change NOTEBOOKDIRECTORY to the actual directory path):</p>
 
 <pre><code>alias nbgrep 'grep \!:* NOTEBOOKDIRECTORY/20*/*/*md'
 </code></pre>
