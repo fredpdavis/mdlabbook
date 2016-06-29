@@ -42,8 +42,8 @@ using git: `git clone https://github.com/fredpdavis/mdlabbook.git`
       then run `source ~/.cshrc`:
         `alias mdlabbook perl /FULLPATH/TO/THE/MDLABBOOK/src/mdlabbook.pl`
 
-2. Install [pandoc](http://pandoc.org). Follow their suggestions for installing
-   LaTeX, as you'll need it for producing PDF output
+2. Install [pandoc](http://pandoc.org). After installing pandoc, also follow
+   their instructions to install LaTeX, as you'll need it to create PDFs.
 
 3. Optional: Install [vim](http://vim.org) if you don't already have it -- vim
    is the default editor, though you can specify another editor in the config
@@ -140,7 +140,11 @@ wholelabbook.pdf in your notebook directory.
 - Stores images or other files by month:
 `notebookdirectory/year/yearmonth/files`
 
-- cshrc alias to search the notebook:
+- bash alias to search the notebook (change NOTEBOOKDIRECTORY to the actual directory path):
+
+        nbgrep() { grep "$@" NOTEBOOKDIRECTORY/20*/*/*md;}
+
+- csh alias to search the notebook (change NOTEBOOKDIRECTORY to the actual directory path):
 
         alias nbgrep 'grep \!:* NOTEBOOKDIRECTORY/20*/*/*md'
 

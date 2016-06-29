@@ -47,7 +47,7 @@ sub main {
 
 # Figure out run mode
    my $opts = {} ;
-   getopts('phfne:d:c:i:', $opts) ;
+   getopts('wphfne:d:c:i:', $opts) ;
    $opts->{usage} = $usage ;
 
    if (exists $opts->{h}) { die $usage;}
@@ -261,6 +261,8 @@ author: ".$opts->{author}."
                   my $fn = $month2entry->{$month}->{$month.$val} ;
                   my $html_fn = $fn ;$html_fn =~ s/md$/html/ ;
                   $val = "<a href=\"$html_fn\">$val</a>";
+               } else {
+                  $val = "<font color=\"lightgrey\">$val</font>";
                }
             } else {
                $val = "<b>$val</b>" ;
