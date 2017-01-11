@@ -20,7 +20,7 @@ main() ;
 
 sub main {
 
-   my $usage = "USAGE: ".__FILE__." [OPTIONS] -c CONFIGFILE
+   my $usage = __FILE__." [OPTIONS] -c CONFIGFILE
 
 -c CONFIGFILE   ONLY REQUIRED OPTION: see example_mdlabbook.config
 
@@ -42,13 +42,14 @@ sub main {
 -o out_prefix   Prefix for cropped PNG file names (default \"nb_p\")
 -x CROPSPECFILE file listing cropping specs for individual pages, listed by
                 physical page number, eg: \"1 1600x2350+250+0\"
-
 " ;
 
 # Figure out run mode
    my $opts = {} ;
-   getopts('wphfne:d:c:i:', $opts) ;
+   my @orig_argv = @ARGV ;
+   getopts('iwphfne:b:l:r:o:s:x:d:c:', $opts) ;
    $opts->{usage} = $usage ;
+   $opts->{ARGV} = \@orig_argv ;
 
    if (exists $opts->{h}) { die $usage;}
    if (!exists $opts->{c}) { die "ERROR: must specify -c CONFIGFILE\n$usage" ;}
@@ -184,6 +185,10 @@ date: $monthName $day, $year
 
 # Figure out destination directory
       my $fileDir = $todayDir."/files" ;
+      if (exists $opts->{d}) {
+         print STDERR "Moving to custom directory: ".$opts->{d}."\n";
+         $fileDir = $opts->{d} ; }
+
       if (! -s $fileDir) {mkpath($fileDir);}
 
 # Iterate over specified files and move to destination
@@ -261,8 +266,6 @@ author: ".$opts->{author}."
                   my $fn = $month2entry->{$month}->{$month.$val} ;
                   my $html_fn = $fn ;$html_fn =~ s/md$/html/ ;
                   $val = "<a href=\"$html_fn\">$val</a>";
-               } else {
-                  $val = "<font color=\"lightgrey\">$val</font>";
                }
             } else {
                $val = "<b>$val</b>" ;
@@ -296,22 +299,26 @@ author: ".$opts->{author}."
 sub crop_notebookscan {
    my $opts = shift ;
 
-   my $specs =  {
-      out_prefix        => "nb_p",
-      left_crop_spec    => "1600x2350+250+0",
-      right_crop_spec   => "1600x2350+1750+0",
-      startpage         => 1,
+   my $default_specs =  {
+      o   => "nb_p",
+      l   => "1600x2350+250+0",
+      r   => "1600x2350+1750+0",
+      b   => 1,
    } ;
 
-   my $j = 0 ;
-   while ($j <= $#ARGV) {
-      my $key = $ARGV[$j] ; $key =~ s/^-// ;
-      $specs->{$key} = $ARGV[($j + 1)] ;
-      $j += 2;
-   }
+   foreach my $k ( keys %{$default_specs}) {
+      if (!exists $opts->{$k}) {
+         $opts->{$k} = $default_specs->{$k} ; } }
 
-   if (! -s $specs->{s}) {
-      die "ERROR: ".$specs->{s}." not found\n$opts->{usage}\n";}
+#   my $j = 0 ;
+#   while ($j <= $#ARGV) {
+#      my $key = $ARGV[$j] ; $key =~ s/^-// ;
+#      $specs->{$key} = $ARGV[($j + 1)] ;
+#      $j += 2;
+#   }
+
+   if (! -s $opts->{s}) {
+      die "ERROR: ".$opts->{s}." not found\n$opts->{usage}\n";}
 
    my $customspecs = {} ;
    if (exists $opts->{x}) {
@@ -328,7 +335,7 @@ sub crop_notebookscan {
    print STDERR "scratchdir: $scratchdir\n";
 
    print STDERR "Converting to PNG\n" ;
-   my $tcom= "convert -density 300 ".$specs->{pdf_fn}." $scratchdir/tmp.$$.png";
+   my $tcom= "convert -density 300 ".$opts->{s}." $scratchdir/tmp.$$.png";
    system($tcom) ;
 
    print STDERR "Cropping page:   " ;
@@ -340,15 +347,15 @@ sub crop_notebookscan {
       if (!defined $orig_p) {$orig_p = 0;}
 
       $orig_p           = ($orig_p * 2) + 1;
-      my $out_p         = $orig_p + $specs->{startpage} - 1 ;
+      my $out_p         = $orig_p + $opts->{b} - 1 ;
 
-      foreach my $crop (@{$specs}{qw/left_crop_spec right_crop_spec/}) {
+      foreach my $crop (@{$opts}{qw/l r/}) {
          my $crop_spec = $crop ;
          if (exists $customspecs->{$out_p}) {
             $crop_spec = $customspecs->{$out_p};}
 
          my $tcom       = "convert ".$origfiles[$j]." -crop $crop_spec ".
-                          " ".$specs->{out_prefix}.$out_p.".png" ;
+                          " ".$opts->{o}.$out_p.".png" ;
          system($tcom) ;
          $out_p++ ;
       }
